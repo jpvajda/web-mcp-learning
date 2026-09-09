@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>WebMCP Learning — Task Tracker</title>
+    <link rel="stylesheet" href="/src/styles.css" />
+  </head>
+  <body>
+    <main>
+      <h1>Task Tracker</h1>
+      <p class="lede">
+        A toy in-memory app that exists so WebMCP tools have something real to wrap.
+        Not a production tracker — state lives in a JS array and vanishes on refresh.
+      </p>
+
+      <p id="webmcp-status" class="status" role="status">
+        WebMCP: checking…
+      </p>
+
+      <section aria-labelledby="add-heading">
+        <h2 id="add-heading">Add Task</h2>
+        <form id="add-task-form">
+          <label for="title">Title</label>
+          <input id="title" name="title" type="text" required />
+
+          <label for="priority">Priority</label>
+          <select id="priority" name="priority">
+            <option value="low">low</option>
+            <option value="medium" selected>medium</option>
+            <option value="high">high</option>
+          </select>
+
+          <label for="due-date">Due date</label>
+          <input id="due-date" name="dueDate" type="date" />
+
+          <button type="submit">Add task</button>
+        </form>
+      </section>
+
+      <section aria-labelledby="list-heading">
+        <h2 id="list-heading">List Tasks</h2>
+        <ul id="task-list"></ul>
+        <p id="empty-list" class="empty">No tasks yet.</p>
+      </section>
+    </main>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
