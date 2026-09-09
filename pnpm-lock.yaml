@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@mcp-b/webmcp-local-relay':
+        specifier: ^5.1.0
+        version: 5.1.0
       '@mcp-b/webmcp-polyfill':
         specifier: ^5.1.0
         version: 5.1.0
@@ -173,6 +176,11 @@ packages:
     engines: {node: '>=18'}
     cpu: [x64]
     os: [win32]
+
+  '@mcp-b/webmcp-local-relay@5.1.0':
+    resolution: {integrity: sha512-C5Q5DPgXLoLlQQ3VlIvUnDbnxX5Xh1t4byXpwqJbkayqmekW1luEj69Zo36rsSN6bVlKlrgPsEaJIacjhdSsFw==}
+    engines: {node: '>=22'}
+    hasBin: true
 
   '@mcp-b/webmcp-polyfill@5.1.0':
     resolution: {integrity: sha512-KL09hniFssPY8HBO3qzurWPqm+1JYRwV3wx6x2XSySgo+6BL1XHGsHGIoAO7U9zzigv7TA5keNBoZ+3P1jq18g==}
@@ -429,6 +437,21 @@ packages:
       yaml:
         optional: true
 
+  ws@8.21.3:
+    resolution: {integrity: sha512-201TZ/kPWxoPr/OKWjquZR1SWKXcvxdH+e1xrx89b3YbmzLMFCLfnaG1HFIgWzJOEWZ7MvpK++odZufgYR50Rw==}
+    engines: {node: '>=10.0.0'}
+    peerDependencies:
+      bufferutil: ^4.0.1
+      utf-8-validate: '>=5.0.2'
+    peerDependenciesMeta:
+      bufferutil:
+        optional: true
+      utf-8-validate:
+        optional: true
+
+  zod@4.4.3:
+    resolution: {integrity: sha512-ytENFjIJFl2UwYglde2jchW2Hwm4GJFLDiSXWdTrJQBIN9Fcyp7n4DhxJEiWNAJMV1/BqWfW/kkg71UDcHJyTQ==}
+
   zod@4.5.4:
     resolution: {integrity: sha512-sC95tT5iHHH9gtpj6A81kh+NEaRAUFN+qlUPDUbRfOMvNf5QCBqsb3WgvnpVtK5Y+4UfA6KqufotuTvMGiTlsA==}
 
@@ -511,6 +534,16 @@ snapshots:
 
   '@esbuild/win32-x64@0.28.2':
     optional: true
+
+  '@mcp-b/webmcp-local-relay@5.1.0':
+    dependencies:
+      '@modelcontextprotocol/core': 2.0.0
+      '@modelcontextprotocol/server': 2.0.0
+      ws: 8.21.3
+      zod: 4.4.3
+    transitivePeerDependencies:
+      - bufferutil
+      - utf-8-validate
 
   '@mcp-b/webmcp-polyfill@5.1.0':
     dependencies:
@@ -709,5 +742,9 @@ snapshots:
       tinyglobby: 0.2.17
     optionalDependencies:
       fsevents: 2.3.3
+
+  ws@8.21.3: {}
+
+  zod@4.4.3: {}
 
   zod@4.5.4: {}

@@ -77,5 +77,11 @@
     </main>
 
     <script type="module" src="/src/main.js"></script>
+    <!--
+      Classic script on purpose. Do not import embed.js from main.js —
+      it must stay unbundled so it can fetch sibling widget.html.
+      data-debug logs relay discovery in the browser console.
+    -->
+    <script src="/webmcp-relay/embed.js" data-relay-port="9333" data-debug></script>
   </body>
 </html>

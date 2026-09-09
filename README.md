@@ -44,4 +44,51 @@ Without native WebMCP or the Part 4 polyfill, registration is a silent no-op and
 - If the browser already has `document.modelContext` (Chrome flag / origin trial), `initializeWebMCPPolyfill()` is a **no-op** and does not replace the native object.
 - `installTestingShim: true` adds `navigator.modelContextTesting` so inspector extensions can list and execute tools. The shim is skipped if a native testing API is already present.
 
-A later part adds a local MCP relay so Cursor or Claude Desktop can call these tools.
+## Local MCP relay (Part 5)
+
+The page registers tools in the browser. Desktop agents speak MCP over stdio. `@mcp-b/webmcp-local-relay` bridges them: `embed.js` opens a WebSocket to `127.0.0.1:9333`, and `scripts/relay.mjs` is the MCP server Cursor or Claude Desktop spawn.
+
+1. Keep `npm run dev` running and the app open at [http://localhost:5173](http://localhost:5173) (not a `file:` URL).
+2. Add the relay to your MCP client. **Cursor** (`~/.cursor/mcp.json` or the project `.cursor/mcp.json`):
+
+```json
+{
+  "mcpServers": {
+    "webmcp-task-tracker": {
+      "command": "node",
+      "args": ["/ABSOLUTE/PATH/TO/web-mcp-learning/scripts/relay.mjs"]
+    }
+  }
+}
+```
+
+Replace `/ABSOLUTE/PATH/TO/web-mcp-learning` with this repo's path.
+
+Equivalent without the wrapper script:
+
+```json
+{
+  "mcpServers": {
+    "webmcp-local-relay": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@mcp-b/webmcp-local-relay@latest",
+        "--widget-origin",
+        "http://localhost:5173"
+      ]
+    }
+  }
+}
+```
+
+**Claude Desktop:** download the `.mcpb` bundle from [GitHub Releases](https://github.com/WebMCP-org/npm-packages/releases) and double-click to install, or add the same JSON to Claude's MCP config.
+
+3. Restart the MCP client (or reload MCP servers). Ask it to call `webmcp_list_sources` then `webmcp_list_tools`. You should see this tab and `add_task` / `list_tasks` / `complete_task` / `search_tasks`.
+4. Ask: “add a task called Buy milk, high priority.” The list on the page should update.
+
+`npm run relay` in a terminal only confirms the process starts; Cursor must spawn it over stdio for tools to appear in chat.
+
+Node 22+ is required for the relay. The embed is served from the installed npm package at `/webmcp-relay/` (not bundled) so sibling `widget.html` still resolves.
+
+A later section covers Chrome extension verification and a Playwright-vs-WebMCP comparison.
