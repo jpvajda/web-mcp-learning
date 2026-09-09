@@ -33,4 +33,8 @@ The page feature-detects `document.modelContext` (falls back to `navigator.model
 
 Without native WebMCP or the Part 4 polyfill, registration is a silent no-op and the forms still work.
 
-Later parts add a declarative search form, a polyfill, and a local MCP relay so Cursor or Claude Desktop can call these tools.
+## Declarative tool (Part 3)
+
+`search_tasks` is **not** registered in JS. The Search form uses `toolname`, `tooldescription`, and `toolparamdescription`. The browser (or later the polyfill) builds the JSON Schema from those attributes and the named inputs.
+
+Later parts add a polyfill and a local MCP relay so Cursor or Claude Desktop can call these tools.

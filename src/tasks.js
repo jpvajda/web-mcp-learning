@@ -57,3 +57,9 @@ export function completeTask({ taskId, title } = {}) {
   task.completed = true;
   return { ...task };
 }
+
+export function searchTasks(query) {
+  const needle = String(query ?? '').trim().toLowerCase();
+  if (!needle) return [];
+  return listTasks().filter((task) => task.title.toLowerCase().includes(needle));
+}

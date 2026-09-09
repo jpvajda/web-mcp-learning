@@ -1,4 +1,4 @@
-import { addTask, completeTask, listTasks } from './tasks.js';
+import { addTask, completeTask, listTasks, searchTasks } from './tasks.js';
 
 const taskListEl = () => document.getElementById('task-list');
 const emptyEl = () => document.getElementById('empty-list');
@@ -49,6 +49,33 @@ export function wireUi() {
     });
     form.reset();
     renderTasks();
+  });
+
+  const searchForm = document.getElementById('search-form');
+  const searchResults = document.getElementById('search-results');
+
+  searchForm.addEventListener('submit', (event) => {
+    event.preventDefault();
+    const data = new FormData(searchForm);
+    const query = data.get('query');
+    const matches = searchTasks(query);
+    const payload = { query, matches };
+
+    searchResults.hidden = false;
+    searchResults.textContent =
+      matches.length === 0
+        ? `No tasks matching “${query}”.`
+        : matches.map((task) => `${task.title} (${task.id})`).join(', ');
+
+    // Agent-triggered submits set agentInvoked. respondWith() is how the
+    // declarative tool returns a value instead of navigating away.
+    if (event.agentInvoked && typeof event.respondWith === 'function') {
+      event.respondWith(
+        Promise.resolve({
+          content: [{ type: 'text', text: JSON.stringify(payload, null, 2) }],
+        }),
+      );
+    }
   });
 
   renderTasks();
