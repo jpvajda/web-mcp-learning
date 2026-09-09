@@ -21,4 +21,16 @@ A minimal UI:
 2. **List Tasks** — in-memory JS array
 3. **Mark complete** — by the button on each row (task id)
 
-Later parts add imperative WebMCP tools, a declarative search form, a polyfill, and a local MCP relay so Cursor or Claude Desktop can call those tools.
+## Imperative tools (Part 2)
+
+The page feature-detects `document.modelContext` (falls back to `navigator.modelContext`) and registers three tools that call the same functions as the UI:
+
+| Tool | Purpose |
+| --- | --- |
+| `add_task` | Create a task (`title` required; `priority` enum; `dueDate` date) |
+| `list_tasks` | Return the current in-memory array as JSON |
+| `complete_task` | Mark a task complete by `taskId` or `title` |
+
+Without native WebMCP or the Part 4 polyfill, registration is a silent no-op and the forms still work.
+
+Later parts add a declarative search form, a polyfill, and a local MCP relay so Cursor or Claude Desktop can call these tools.

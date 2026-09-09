@@ -1,7 +1,8 @@
-import { setWebmcpStatus, wireUi } from './ui.js';
+import { wireUi } from './ui.js';
+import { registerImperativeTools } from './webmcp.js';
 
 wireUi();
 
-// Part 2 will register tools here. Until then the page is a normal form app
-// and WebMCP is simply not present.
-setWebmcpStatus('WebMCP: unavailable (tools not registered yet)');
+// Feature-detects and no-ops if the browser has no WebMCP surface.
+// Part 4 will install a polyfill so this succeeds without Chrome flags.
+void registerImperativeTools();
