@@ -17,6 +17,18 @@
       <p id="webmcp-status" class="status" role="status">
         WebMCP: checking…
       </p>
+      <p class="lede">
+        Chrome inspector extensions (WebMCP Inspector, Model Context Tool Inspector)
+        do <strong>not</strong> see a JavaScript polyfill. They inject a content
+        script in an isolated world and only find the <em>native</em> API. Enable
+        <code>chrome://flags/#enable-webmcp-testing</code>, relaunch Chrome, then
+        reload this page. The page console
+        <code>await document.modelContext.getTools()</code> works either way.
+      </p>
+      <p>
+        <button type="button" id="connect-relay">Connect desktop MCP relay</button>
+        <span class="lede">Only needed for Cursor / Claude Desktop. Leave off while using the inspector — otherwise the console fills with failed <code>ws://127.0.0.1:9333–9348</code> probes.</span>
+      </p>
 
       <section aria-labelledby="add-heading">
         <h2 id="add-heading">Add Task</h2>
@@ -77,11 +89,5 @@
     </main>
 
     <script type="module" src="/src/main.js"></script>
-    <!--
-      Classic script on purpose. Do not import embed.js from main.js —
-      it must stay unbundled so it can fetch sibling widget.html.
-      data-debug logs relay discovery in the browser console.
-    -->
-    <script src="/webmcp-relay/embed.js" data-relay-port="9333" data-debug></script>
   </body>
 </html>

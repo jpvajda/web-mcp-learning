@@ -133,8 +133,19 @@ export async function registerImperativeTools({ runtime = 'unknown' } = {}) {
   });
 
     const source = document.modelContext ? 'document.modelContext' : 'navigator.modelContext';
+    const hasTesting = typeof navigator.modelContextTesting?.listTools === 'function';
+    let inspectorNote;
+    if (hasTesting) {
+      inspectorNote = 'navigator.modelContextTesting is present — inspectors that use it can list tools.';
+    } else if (runtime === 'native') {
+      inspectorNote =
+        'Chrome shipped native document.modelContext but not navigator.modelContextTesting on this build. Inspectors that require the testing API will still say the API is missing. Verify with document.modelContext.getTools() or the MCP relay.';
+    } else {
+      inspectorNote =
+        'Page tools work. Inspector extensions cannot see a JS polyfill — they need native navigator.modelContextTesting.';
+    }
     setWebmcpStatus(
-      `WebMCP: ${runtime} ${source} — 3 imperative tools registered; search_tasks is declarative`,
+      `WebMCP: ${runtime} ${source} — 3 imperative tools registered; search_tasks is declarative. ${inspectorNote}`,
     );
   } catch (error) {
     // The polyfill throws SecurityError when originAgentCluster is false

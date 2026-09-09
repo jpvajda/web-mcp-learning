@@ -13,7 +13,7 @@
 
 import { LocalRelayMcpServer } from '@mcp-b/webmcp-local-relay';
 
-const PAGE_ORIGIN = 'http://localhost:5173';
+const PAGE_ORIGINS = ['http://localhost:5173', 'http://127.0.0.1:5173'];
 
 const relay = new LocalRelayMcpServer({
   serverName: 'webmcp-task-tracker',
@@ -22,7 +22,7 @@ const relay = new LocalRelayMcpServer({
     host: '127.0.0.1',
     port: 9333,
     // Restrict to this Vite app so random tabs cannot publish tools here.
-    allowedOrigins: [PAGE_ORIGIN],
+    allowedOrigins: PAGE_ORIGINS,
   },
 });
 
@@ -30,7 +30,7 @@ await relay.start();
 await relay.startStdio();
 
 process.stderr.write(
-  `[webmcp-task-tracker] relay listening on ws://127.0.0.1:${relay.bridge.port} (origin ${PAGE_ORIGIN})\n`,
+  `[webmcp-task-tracker] relay listening on ws://127.0.0.1:${relay.bridge.port} (origins ${PAGE_ORIGINS.join(', ')})\n`,
 );
 
 async function shutdown(reason) {

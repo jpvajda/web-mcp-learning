@@ -78,6 +78,22 @@ export function wireUi() {
     }
   });
 
+  const connectRelay = document.getElementById('connect-relay');
+  connectRelay?.addEventListener('click', () => {
+    if (document.querySelector('script[data-webmcp-embed]')) return;
+    // Classic script on purpose — embed.js must stay unbundled so it can
+    // fetch sibling widget.html. Do not load this on every page view: with
+    // no relay process it scans ws://127.0.0.1:9333–9348 and IPv6 and floods
+    // the console. That scan is unrelated to the Chrome inspector.
+    const script = document.createElement('script');
+    script.src = '/webmcp-relay/embed.js';
+    script.dataset.webmcpEmbed = '1';
+    script.dataset.relayPort = '9333';
+    document.body.appendChild(script);
+    connectRelay.disabled = true;
+    connectRelay.textContent = 'Relay embed loaded (needs npm run relay or Cursor MCP)';
+  });
+
   renderTasks();
 }
 
