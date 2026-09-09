@@ -73,11 +73,13 @@ Only needed if you want an AI chat to call these tools. The relay is extra infra
   "mcpServers": {
     "webmcp-task-tracker": {
       "command": "node",
-      "args": ["/Users/jvajda/Documents/Github_Personal/web-mcp-learning/scripts/relay.mjs"]
+      "args": ["/absolute/path/to/web-mcp-learning/scripts/relay.mjs"]
     }
   }
 }
 ```
+
+Replace `/absolute/path/to/web-mcp-learning` with the full path to where you cloned this repo (e.g. run `pwd` inside the repo to get it).
 
 3. Reload MCP servers. Cursor spawns [`scripts/relay.mjs`](scripts/relay.mjs); you do not run it yourself.
 4. On the page, click **Connect desktop MCP relay**.
