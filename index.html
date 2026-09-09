@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>WebMCP Learning — Task Tracker</title>
+    <link rel="stylesheet" href="/src/styles.css" />
+  </head>
+  <body>
+    <main>
+      <h1>Task Tracker</h1>
+      <p class="lede">
+        A toy in-memory app that exists so WebMCP tools have something real to wrap.
+        Not a production tracker — state lives in a JS array and vanishes on refresh.
+      </p>
+
+      <p id="webmcp-status" class="status" role="status">
+        WebMCP: checking…
+      </p>
+      <p class="lede">
+        Chrome inspector extensions (WebMCP Inspector, Model Context Tool Inspector)
+        do <strong>not</strong> see a JavaScript polyfill. They inject a content
+        script in an isolated world and only find the <em>native</em> API. Enable
+        <code>chrome://flags/#enable-webmcp-testing</code>, relaunch Chrome, then
+        reload this page. The page console
+        <code>await document.modelContext.getTools()</code> works either way.
+      </p>
+      <p>
+        <button type="button" id="connect-relay">Connect desktop MCP relay</button>
+        <span class="lede">Only needed for Cursor / Claude Desktop. Leave off while using the inspector — otherwise the console fills with failed <code>ws://127.0.0.1:9333–9348</code> probes.</span>
+      </p>
+
+      <section aria-labelledby="add-heading">
+        <h2 id="add-heading">Add Task</h2>
+        <form id="add-task-form">
+          <label for="title">Title</label>
+          <input id="title" name="title" type="text" required />
+
+          <label for="priority">Priority</label>
+          <select id="priority" name="priority">
+            <option value="low">low</option>
+            <option value="medium" selected>medium</option>
+            <option value="high">high</option>
+          </select>
+
+          <label for="due-date">Due date</label>
+          <input id="due-date" name="dueDate" type="date" />
+
+          <button type="submit">Add task</button>
+        </form>
+      </section>
+
+      <!--
+        Declarative WebMCP (contrast with src/webmcp.js):
+        Part 2 registered tools in JavaScript with an explicit JSON Schema.
+        This form is the other API: the browser (or polyfill) *synthesizes*
+        a tool named `search_tasks` from HTML attributes and named controls.
+        No registerTool() call. Agents fill the fields and submit the form.
+
+        toolautosubmit exists so an agent can finish the call without a
+        human clicking Search. Without it, the agent only pre-fills fields.
+      -->
+      <section aria-labelledby="search-heading">
+        <h2 id="search-heading">Search Tasks</h2>
+        <form
+          id="search-form"
+          toolname="search_tasks"
+          tooldescription="Search in-memory tasks by keyword in the title. Use when the user wants to find existing tasks, not create one."
+          toolautosubmit
+        >
+          <label for="query">Query</label>
+          <input
+            id="query"
+            name="query"
+            type="text"
+            required
+            toolparamdescription="Case-insensitive keyword to match against task titles."
+          />
+          <button type="submit">Search</button>
+        </form>
+        <p id="search-results" class="empty" hidden></p>
+      </section>
+
+      <section aria-labelledby="list-heading">
+        <h2 id="list-heading">List Tasks</h2>
+        <ul id="task-list"></ul>
+        <p id="empty-list" class="empty">No tasks yet.</p>
+      </section>
+    </main>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
