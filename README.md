@@ -37,4 +37,11 @@ Without native WebMCP or the Part 4 polyfill, registration is a silent no-op and
 
 `search_tasks` is **not** registered in JS. The Search form uses `toolname`, `tooldescription`, and `toolparamdescription`. The browser (or later the polyfill) builds the JSON Schema from those attributes and the named inputs.
 
-Later parts add a polyfill and a local MCP relay so Cursor or Claude Desktop can call these tools.
+## Polyfill (Part 4)
+
+`@mcp-b/webmcp-polyfill` is initialized in `src/main.js` **before** tools register.
+
+- If the browser already has `document.modelContext` (Chrome flag / origin trial), `initializeWebMCPPolyfill()` is a **no-op** and does not replace the native object.
+- `installTestingShim: true` adds `navigator.modelContextTesting` so inspector extensions can list and execute tools. The shim is skipped if a native testing API is already present.
+
+A later part adds a local MCP relay so Cursor or Claude Desktop can call these tools.

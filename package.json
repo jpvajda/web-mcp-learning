@@ -11,5 +11,8 @@
   },
   "devDependencies": {
     "vite": "^7.1.5"
+  },
+  "dependencies": {
+    "@mcp-b/webmcp-polyfill": "^5.1.0"
   }
 }

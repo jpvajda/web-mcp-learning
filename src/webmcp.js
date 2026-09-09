@@ -38,7 +38,7 @@ function toolError(message) {
   };
 }
 
-export async function registerImperativeTools() {
+export async function registerImperativeTools({ runtime = 'unknown' } = {}) {
   const modelContext = getModelContext();
 
   if (!modelContext || typeof modelContext.registerTool !== 'function') {
@@ -132,5 +132,7 @@ export async function registerImperativeTools() {
   });
 
   const source = document.modelContext ? 'document.modelContext' : 'navigator.modelContext';
-  setWebmcpStatus(`WebMCP: ${source} — 3 imperative tools registered`);
+  setWebmcpStatus(
+    `WebMCP: ${runtime} ${source} — 3 imperative tools registered; search_tasks is declarative`,
+  );
 }
