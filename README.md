@@ -11,7 +11,7 @@ npm install
 npm run dev
 ```
 
-Open [http://localhost:5173](http://localhost:5173). Serve over HTTP — WebMCP rejects opaque `file:` origins.
+Open [http://localhost:5173](http://localhost:5173). Serve over HTTP — WebMCP rejects opaque `file:` origins. Vite also sends `Origin-Agent-Cluster: ?1` because the polyfill refuses `registerTool` when the page is not origin-keyed.
 
 ## What is here so far (Part 1)
 
@@ -99,7 +99,7 @@ Some inspectors talk to `navigator.modelContextTesting`. This app installs that 
 
 1. `npm install && npm run dev` — open [http://localhost:5173](http://localhost:5173), not a `file:` URL.
 2. Confirm the status line shows a polyfill or native `document.modelContext`.
-3. Open both extensions. They should detect **4 tools**: `add_task`, `list_tasks`, `complete_task` (imperative) and `search_tasks` (declarative).
+3. Use **desktop Chrome**, not an embedded webview. The polyfill throws `SecurityError` when `originAgentCluster` is false (some embedded browsers ignore the `Origin-Agent-Cluster` header). Open both extensions. They should detect **4 tools**: `add_task`, `list_tasks`, `complete_task` (imperative) and `search_tasks` (declarative).
 4. **Execute tab:** run `add_task` (title + priority enum + optional dueDate) then `list_tasks`. The schema-generated form should match those fields — `priority` is a low/medium/high choice, not a free-text box. The task should appear in the page list.
 5. **Monitor / event-log tab:** submit the real Add Task form on the page. You should see tool registration and/or `toolchange` / invocation-related events. (UI submit is not itself a tool call; the interesting events are registration at load and later agent/inspector executes.)
 6. **Relay + agent:** with Part 5 configured, ask an assistant “add a task called X”. It should pick `add_task` (not guess CSS selectors). Confirm the UI list updates. Then “what tasks are on the list?” should call `list_tasks`.
@@ -112,3 +112,29 @@ console.log(tools.map((t) => t.name));
 ```
 
 Expect `add_task`, `list_tasks`, `complete_task`, and `search_tasks`.
+
+## Playwright vs WebMCP (Part 7)
+
+[`playwright-comparison.spec.js`](playwright-comparison.spec.js) performs the same three actions — add, list, complete — using **only DOM selectors**. It never calls `document.modelContext`.
+
+```bash
+npx playwright install chromium
+npm run test:playwright
+```
+
+| | Playwright / selector-guessing | WebMCP tools |
+| --- | --- | --- |
+| How the agent finds the action | Inspect the DOM (or a screenshot) for `#title`, `#priority`, `button.complete` | Read `name` + `description` + `inputSchema` |
+| Lines of code for 3 actions | ~20 of brittle locators in the spec | 3 `registerTool` blocks; the agent writes no selectors |
+| Breaks when you rename a CSS id | Yes | No — tools call `addTask()` / `completeTask()` |
+| Breaks when you restyle the list | Often | No |
+| Needs a visible page | Yes | Tool execute still runs the same JS even if the agent never "sees" the form |
+
+An agent will prefer tools over screenshotting or selector-guessing when the tools look like a better bet than the DOM:
+
+- **Unique names** (`add_task`, not `do_thing`) so the model can pick one without overlap.
+- **When-to-call language in `description`** ("Use when the user wants to create a to-do") — this is the routing signal, not a comment for humans.
+- **Explicit required vs optional fields** and enums (`priority: low|medium|high`) so the model does not invent values or omit `title`.
+- **Return enough state** (`list_tasks` returns the full JSON array with ids) that the agent does not need to scrape the `<ul>` to call `complete_task`.
+
+If descriptions are vague or schemas are empty objects, the model often ignores the tools and goes back to clicking. That is why the comments in `src/webmcp.js` treat `description` as agent-facing, not documentation.

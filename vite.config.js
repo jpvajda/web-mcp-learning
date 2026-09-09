@@ -4,9 +4,10 @@ import path from 'node:path';
 import { defineConfig } from 'vite';
 
 const require = createRequire(import.meta.url);
+// Resolve via the package main entry — package.json is not in "exports".
 const relayBrowserDir = path.join(
-  path.dirname(require.resolve('@mcp-b/webmcp-local-relay/package.json')),
-  'dist/browser',
+  path.dirname(require.resolve('@mcp-b/webmcp-local-relay')),
+  'browser',
 );
 
 const RELAY_FILES = new Set(['embed.js', 'widget.html', 'widget.js']);
@@ -53,5 +54,15 @@ export default defineConfig({
   server: {
     port: 5173,
     strictPort: true,
+    // The polyfill rejects registerTool when originAgentCluster === false.
+    // This header asks the browser to origin-key the page (required by WebMCP).
+    headers: {
+      'Origin-Agent-Cluster': '?1',
+    },
+  },
+  preview: {
+    headers: {
+      'Origin-Agent-Cluster': '?1',
+    },
   },
 });

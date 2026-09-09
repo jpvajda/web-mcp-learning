@@ -46,6 +46,7 @@ export async function registerImperativeTools({ runtime = 'unknown' } = {}) {
     return;
   }
 
+  try {
   // `description` is NOT documentation for humans reading this file.
   // It is the signal the agent uses to decide WHEN to call the tool.
   // Vague descriptions ("manages tasks") cause the model to pick the
@@ -131,8 +132,14 @@ export async function registerImperativeTools({ runtime = 'unknown' } = {}) {
     },
   });
 
-  const source = document.modelContext ? 'document.modelContext' : 'navigator.modelContext';
-  setWebmcpStatus(
-    `WebMCP: ${runtime} ${source} — 3 imperative tools registered; search_tasks is declarative`,
-  );
+    const source = document.modelContext ? 'document.modelContext' : 'navigator.modelContext';
+    setWebmcpStatus(
+      `WebMCP: ${runtime} ${source} — 3 imperative tools registered; search_tasks is declarative`,
+    );
+  } catch (error) {
+    // The polyfill throws SecurityError when originAgentCluster is false
+    // (some embedded browsers). Real Chrome + the Vite OAC header should pass.
+    setWebmcpStatus(`WebMCP: registration failed (${error.name}: ${error.message || 'see console'})`);
+    console.error('[webmcp] registerTool failed', error);
+  }
 }
