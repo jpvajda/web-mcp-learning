@@ -91,4 +91,24 @@ Equivalent without the wrapper script:
 
 Node 22+ is required for the relay. The embed is served from the installed npm package at `/webmcp-relay/` (not bundled) so sibling `widget.html` still resolves.
 
-A later section covers Chrome extension verification and a Playwright-vs-WebMCP comparison.
+## Manual verification (Part 6)
+
+Use the Chrome extensions you already have: **WebMCP Extension** and **WebMCP Inspector** / **Model Context Tool Inspector**.
+
+Some inspectors talk to `navigator.modelContextTesting`. This app installs that via the polyfill testing shim. If you are on native Chrome WebMCP instead, enable `chrome://flags/#enable-webmcp-testing` and relaunch.
+
+1. `npm install && npm run dev` — open [http://localhost:5173](http://localhost:5173), not a `file:` URL.
+2. Confirm the status line shows a polyfill or native `document.modelContext`.
+3. Open both extensions. They should detect **4 tools**: `add_task`, `list_tasks`, `complete_task` (imperative) and `search_tasks` (declarative).
+4. **Execute tab:** run `add_task` (title + priority enum + optional dueDate) then `list_tasks`. The schema-generated form should match those fields — `priority` is a low/medium/high choice, not a free-text box. The task should appear in the page list.
+5. **Monitor / event-log tab:** submit the real Add Task form on the page. You should see tool registration and/or `toolchange` / invocation-related events. (UI submit is not itself a tool call; the interesting events are registration at load and later agent/inspector executes.)
+6. **Relay + agent:** with Part 5 configured, ask an assistant “add a task called X”. It should pick `add_task` (not guess CSS selectors). Confirm the UI list updates. Then “what tasks are on the list?” should call `list_tasks`.
+
+Console check if an extension looks empty:
+
+```js
+const tools = await document.modelContext.getTools();
+console.log(tools.map((t) => t.name));
+```
+
+Expect `add_task`, `list_tasks`, `complete_task`, and `search_tasks`.
